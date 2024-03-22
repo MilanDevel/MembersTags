@@ -1,0 +1,298 @@
+openapi: 3.0.3
+info:
+  title: Members and Tags - OpenAPI 3.0 documentation
+  description: |-
+    This is a sample Members Server based on the OpenAPI 3.0 specification. 
+  contact:
+    email: mkocandrle@email.cz
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8000/api
+paths:
+  /members:
+    get:
+      tags:
+        - Members
+      summary: Return all members
+      description: Return all members
+      parameters:
+        - name: withTags
+          in: query
+          description: Return result with tags if set to true value (e.g. any number), without tags if set to false (e.g. 0)
+          required: false
+          explode: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberOutWithTag'
+    put:
+      tags:
+        - Members
+      summary: Insert new member
+      description: Insert new member
+      requestBody:
+        description: Create a new member
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberOut'
+        '422':
+          description: Validation exception
+  /members/{Id}:
+    get:
+      tags:
+        - Members
+      summary: Return selected member
+      description: Returns selected member
+      parameters:
+        - name: Id
+          in: path
+          description: ID of member to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: withTags
+          in: query
+          description: Return result with tag if set to true value (e.g. any number), without tag if set to false (e.g. 0)
+          required: false
+          explode: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberOutWithTag'  
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Member not found
+    patch:
+      tags:
+        - Members
+      summary: Update member
+      description: Update member
+      parameters:
+        - name: Id
+          in: path
+          description: ID of member to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update member
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+        required: true
+      responses:
+        '204':
+          description: Patch applied
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Member not found
+        '422':
+          description: Validation exception
+    delete:
+      tags:
+        - Members
+      summary: Deletes a member
+      description: Delete a member
+      parameters:
+        - name: Id
+          in: path
+          description: Member id to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid key value
+        '404':
+          description: Member not found
+  /members/{Id}/tags:
+    put:
+      tags:
+        - Members
+      summary: Attach tag to member
+      description: Attach tag to member
+      parameters:
+        - name: Id
+          in: path
+          description: ID of member
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Tag to attach
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TagToAttach'
+        required: true
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '422':
+          description: Validation exception
+  /members/{Id}/tags/{TId}:
+    delete:
+      tags:
+        - Members
+      summary: Detach tag from a member
+      description: Detach tag from a member
+      parameters:
+        - name: Id
+          in: path
+          description: Member id to detach
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: TId
+          in: path
+          description: Tag id to detach
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Successful operation
+        '400':
+          description: Invalid key value
+        '404':
+          description: Member or tag not found
+  
+components:
+  schemas:
+    Member:
+      type: object
+      required: ["firstname", "lastname", "email", "birthdate", "phone"]
+      properties:
+        firstname:
+          type: string
+          format: string
+          example: 'John'
+        lastname:
+          type: string
+          format: string
+          example: 'Nowak'
+        email:
+          type: string
+          format: string
+          example: 'JohnNowak@email.com'
+        birthdate:
+          type: string
+          format: date-time
+          example: '1.1.2000'
+        phone:
+          type: string
+          example: '+420123456789'
+    MemberOut:
+      type: object
+      required: ["id", "firstname", "lastname", "email", "birthdate", "phone"]
+      properties:
+        id:
+          type: integer
+          example: 10
+        firstname:
+          type: string
+          format: string
+          example: 'John'
+        lastname:
+          type: string
+          format: string
+          example: 'Nowak'
+        email:
+          type: string
+          format: string
+          example: 'JohnNowak@email.com'
+        birthdate:
+          type: string
+          format: date-time
+          example: '1.1.2000'
+        phone:
+          type: string
+          example: '+420123456789'
+    MemberOutWithTag:
+      type: object
+      required: ["id", "firstname", "lastname", "email", "birthdate", "phone"]
+      properties:
+        id:
+          type: integer
+          example: 10
+        firstname:
+          type: string
+          format: string
+          example: 'John'
+        lastname:
+          type: string
+          format: string
+          example: 'Nowak'
+        email:
+          type: string
+          format: string
+          example: 'JohnNowak@email.com'
+        birthdate:
+          type: string
+          format: date-time
+          example: '1.1.2000'
+        phone:
+          type: string
+          example: '+420123456789'
+        tag:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        created_at:
+          type: string
+          example: "2024-03-22T17:45:30.000000Z"
+        updated_at:
+          type: string
+          example: "2024-03-22T17:45:30.000000Z"
+    TagToAttach:
+      type: object
+      required: ["tag_id"]
+      properties:
+        tag_id:
+          type: integer
+          format: int64
+          example: 3
